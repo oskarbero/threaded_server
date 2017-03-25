@@ -5,8 +5,9 @@ import threading
 import socket
 
 # receive packets from any network interfaces of this family
-hostname = ''
+hostname = '127.0.0.1'
 # default non-privileged port
+portnum = 47989
 
 
 class Server(object):
@@ -31,18 +32,18 @@ class Server(object):
             print("Revving up those fryers...")
             client_sock, addr = self.sock.accept()
             client_sock.settimeout(10)
-            print("Request from the IP ", addr)
+            print("Request from the IP ", addr[0])
             process = threading.Thread(target=handle_client, args=(client_sock, addr))
             process.run()
-            print("Started process %s", process)
+            print("Started process {process}".format(process=process))
             Server.client_cnt += 1
-            print("Client count is %d", Server.client_cnt)
+            print("Client count is {count}".format(count=Server.client_cnt))
 
 
 def handle_client(connection, address):
     size = 1024
     try:
-        print("Connected %s at %s", connection, address)
+        print("Connected {connect} at {addr}".format(connect=connection, addr=address))
         while True:
             get_data = connection.recv(size)
             if get_data:
@@ -50,7 +51,7 @@ def handle_client(connection, address):
                 if get_data == "":
                     print("Socket closed remotely")
                     break
-            print("Received data %s", get_data)
+            print("Received data {data} ".format(data=get_data))
             connection.sendall(get_data)
     except socket.error:
         Server.client_cnt -= 1
